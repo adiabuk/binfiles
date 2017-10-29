@@ -1,0 +1,51 @@
+#!/usr/bin/env python2
+# PYTHON_ARGCOMPLETE_OK
+
+"""
+Send a message to an MQTT server and then disconnect
+
+To start server: mosquitto -p 1883 # default port
+
+Author: Amro Diab
+Date: 09/09/2016
+
+"""
+import argparse
+import socket
+import sys
+import time
+
+import argcomplete
+import paho.mqtt.client as mqtt
+
+CLIENT = mqtt.Client(client_id="a", clean_session=True,
+                     userdata=None, transport="tcp")
+
+
+PARSER = argparse.ArgumentParser('Send a message via mqtt')
+
+PARSER.add_argument('-t', '--topic', help='topic')
+PARSER.add_argument('-p', '--payload', help='payload')
+PARSER.add_argument('-H', '--hostname', help='hostname',
+                    default='localhost')
+
+argcomplete.autocomplete(PARSER)
+
+ARGS = PARSER.parse_args()
+if not ARGS.topic:
+    PARSER.print_help()
+    PARSER.error("Please specify topic")
+elif not ARGS.payload:
+    PARSER.print_help()
+    PARSER.error("Please specify payload")
+
+try:
+    print "Attempting to send {0} to topic {1}".format(ARGS.payload,
+                                                       ARGS.topic)
+    CLIENT.connect(ARGS.hostname)
+except socket.error:
+    sys.exit('Unable to connect to service')
+
+CLIENT.publish(topic=ARGS.topic, payload=ARGS.payload, qos=0, retain=False)
+time.sleep(0.1)  # sleep to ensure socket disconnects gracefully
+CLIENT.disconnect()

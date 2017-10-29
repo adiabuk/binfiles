@@ -1,1 +1,2 @@
-# binfiles
+# local bin dir
+

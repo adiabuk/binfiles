@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Wrapper script for yaourt to ensure we are not redirecting to a hotspot login
+# page which will corrupt out database files when syncing
+#
+# Replace yaourt binary as aliases don't work in interactive shells when called
+# from another script - eg. yaourt-gui.
+# Can be used for other files that need internet connectivity too.
+#
+# Author: Amro Diab
+# Date: 30/11/16
+
+
+response=$(curl --write-out %{http_code} --connect-timeout 1 --silent --output /dev/null 1.1.1.1)
+
+if [[ $response == 302 ]]; then
+  echo "FAILED, check you are connected to the internet"
+  exit 1
+else
+  ${0}-orig $@
+fi
+

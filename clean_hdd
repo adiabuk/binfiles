@@ -1,0 +1,48 @@
+# Clean up /data directory
+
+
+function check_dir_in_chroot(){
+  origin_dir=$1
+  echo "Examining $dir..."
+  inode=`stat $origin_dir|grep Inode|awk -F'Inode:' {'print $2'}|awk {'print $1'}`
+  sameinode=`find /tw/tasks -inum $inode`
+  
+  if [[ -z $sameinode ]]; then
+    echo "Directory not found, deleting origin"
+    /bin/rm -rf $origin_dir
+  else
+    echo "$sameinode found matching $dir, leaving alone.."
+  fi
+}  
+
+# twagentutil -s 127.1 list_tasks !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#check if chroots exist
+
+if [[ ! `hostname` == twshared* ]]; then
+  echo "This script can only be run on twshared hosts, exiting..."
+  exit 1
+fi
+
+num_of_tasks=`ls /tw/tasks 2>/dev/null |wc -l`
+
+if [[ "$num_of_tasks" == 0 ]]; then
+
+  echo "No tasks available on machine, deleting hdd directory"
+
+  rm -rf /data/hdd
+
+else
+  # if cgroups exist?
+
+  data_dirs=`/bin/find /data/hdd -maxdepth 2 -mindepth 2 -type d`
+
+  for dir in $data_dirs; do
+    check_dir_in_chroot(dir)
+  done
+
+fi
+
+# find list of directories
+# for each find list of inodes
+# check each inode exists in tw

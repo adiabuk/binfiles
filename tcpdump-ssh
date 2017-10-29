@@ -1,0 +1,33 @@
+#!/bin/bash
+usage () {
+  echo "Usage: $(basename "$0") -s <user@host> -f <tcpdump_filter>"
+  echo
+  echo "Stream the captured packets to local wireshark over SSH"
+  echo
+  echo "  -s    SSH connection in the form <user@host> or simply <host>"
+  echo "  -f    Filter expression to be passed to tcpdump"
+  echo
+}
+
+while getopts ":hs:f:" opt; do
+  case $opt in
+    s)
+      SSH_CONN=$OPTARG
+      ;;
+    f)
+      TCPDUMP_FILTER=$OPTARG
+      ;;
+    h)
+      usage >&2
+      exit 1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
+echo "TCP Dumping \"${TCPDUMP_FILTER}\" on ${SSH_CONN}"
+ssh $SSH_CONN sudo tcpdump -U -s0 -w - "${TCPDUMP_FILTER}" | wireshark -k -i -

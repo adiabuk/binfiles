@@ -1,0 +1,27 @@
+#!/bin/env sh
+
+# Script for remasering Redhat ISOs.
+# Extracted/modified ISO required
+# Tested with RHEL 4 and ealier ia32 and x86_64
+# Author: Amro Diab
+# Date 04/02/2009
+
+myname='Amro Diab <adiab@hotmail.co.uk>'
+bootimg="isolinux/isolinux.bin"
+bootcat="isolinux/boot.cat"
+distname="Nahant"
+distvers="4.8"
+mkisopts="-R -J -T"
+bootopts="-no-emul-boot -boot-load-size 4 -boot-info-table"
+mydate="$(date '+%d %b %Y')"
+
+mkisofs $mkisopts $bootopts \
+-V "RedHat $distver ($distname) UPDATED Disk 1" \
+-A "RedHat $distver ($distname) update created on $mydate" \
+-P "$myname" \
+-p "$myname" \
+-b "$bootimg" \
+-c "$bootcat" \
+-x lost+found \
+-o "${distname}-x86_64-dvd.iso" .
+

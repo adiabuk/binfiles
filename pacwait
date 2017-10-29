@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# pacwait - a pacman wait wrapper
+#
+# Wrapper script for pacman to wait for lock to be released
+# use with alias pacman='pacwait'
+# also ensure you have alias sudo='sudo ' so that the wrapper script
+# is called with sudo
+# Any messages are printed to stderr to avoid issues when piping output
+# to/from pacman
+# eg. pacman -Qdtq | sudo pacman -Rs -
+
+LOCK_FILE="/var/lib/pacman/db.lck"  # location of lock file
+RECHECK_WAIT=5  # seconds to wait before rechecking
+MAX_WAIT=200  # Number of 5-second intervals to wait, before giving up
+
+[ -f $LOCK_FILE ] && printf "Lock file exists, waiting for release" >&2
+
+count=0
+while [ -f $LOCK_FILE ];
+do
+  printf "." >&2;
+  sleep $RECHECK_WAIT;
+
+  (( count++ ))
+  if [ $count -gt $MAX_WAIT ]; then
+    printf "\nWaited too long, giving up\n" >&2
+    exit 1
+  fi
+
+done
+
+echo "Lock is released" >&2
+pacman $@
+exit $?

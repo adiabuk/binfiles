@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Script to convert zip files to other compressed formats
+# destination format will depend on name of script.
+# eg. zip2tar=>tar, zip2tgz=>tar.gz
+# create hardlinks with different filenames to add additional functionality
+#
+# Author: Amro Diab
+# Date: 05/05/2016
+
+set -e
+
+# check script file name
+case $0 in
+
+  *tar) gz=false;; # default
+  *gz) gz=true;;
+  *) echo "Invalid script name"; exit 1;;
+esac
+
+orig_base=$(basename "$1")
+tmpdir=$(mktemp -d)
+
+# Copy the zip to the temporary directory
+cp "$1" "$tmpdir"/
+
+# Unzip file
+(cd "$tmpdir" && unzip -q "$1")
+
+# Move the original zipfile to /tmp so it doesn't get tarred
+# but keep just in case
+mv "$tmpdir/${orig_base}" /tmp
+
+#Tar the files
+outfilename=$(echo "$1" | rev | cut -d. -f2- | rev).tar
+basefilename=$(basename "$outfilename")
+echo "Creating tar"
+(cd "$tmpdir" && tar cf "$basefilename" ./* )
+
+if $gz; then
+  echo "gzipping tar..."
+  gzip "$tmpdir/$basefilename"
+fi
+
+#Remove the temporary directory
+rm -rf "$tmpdir"
+
+# remove source file as we have gotten this far without any errors
+# backup file will remain temporily in /tmp
+rm "$1"
+echo Done
+
+

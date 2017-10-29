@@ -1,0 +1,105 @@
+#!/usr/bin/env python2
+
+"""
+Script to get list of tasks from Trello using the Trello API.
+Ensure you have the file ~/.trello with your API key and Token
+from https://trello.com/app-key
+Format of the file is as follows:
+{
+  "api_key": "key-goes-here",
+  "token": "token-goes-here"
+}
+
+Following are a list of methods in the card object used below:
+
+add_checklist, add_label, assign, attach, attachments, attriExp, board,
+board_id, card_created_date, change_board, change_list, checklists, client,
+closed, comment, comments, create_date, created_date, dateLastActivity,
+date_last_activity, delete, delete_comment, desc, description, due, due_date,
+fetch, fetch_actions, fetch_attachments, fetch_checklists, fetch_comments,
+from_json, get_attachments, get_comments, get_list, get_stats_by_list, id,
+idLabels, idList, label_ids, labels, latestCardMove_date, listCardMove_date,
+list_id, list_labels, list_movements, member_id, member_ids, name,
+remove_attachment, remove_label, set_closed, set_description, set_due,
+set_name, set_pos, short_id, short_url, subscribe, unassign, url
+
+Author: Amro Diab
+Date: 21/06/17
+
+"""
+
+import json
+import os
+import sys
+
+from trello import TrelloClient
+from trello.exceptions import ResourceUnavailable
+from requests.exceptions import ConnectionError
+
+if not len(sys.argv) == 3:
+    sys.exit('Usage: {0} <board name> <list_name>'.format(sys.argv[0]))
+
+BOARD_NAME = sys.argv[1]
+LIST = sys.argv[2]
+
+try:
+    HOME = os.getenv("HOME")
+    CONFIG = json.load(open(HOME + '/.trello'))
+    API_KEY = CONFIG['api_key']
+    TOKEN = CONFIG['token']
+
+except IOError:
+    print """
+    Unable to open API Key, please create file ~/.trello, and ensure
+    it has your API key and token from trello.  For more information visit:
+    https://trello.com/app-key
+    """
+    sys.exit(1)
+
+CLIENT = TrelloClient(api_key=API_KEY, token=TOKEN)
+
+try:
+    # Get list of boards
+    BOARD_LIST = {}
+    for board in CLIENT.list_boards():
+        BOARD_LIST[board.name] = board.id
+        #BOARD = CLIENT.get_board('8ePzFwzu')
+    BOARD = CLIENT.get_board(BOARD_LIST[BOARD_NAME])
+
+except ConnectionError:
+    sys.exit('Unable to open a connection to Trello')
+except ResourceUnavailable:
+    sys.exit('Invalid API KEY')
+except KeyError:
+    print 'Invalid Board name'
+    print 'Available Boards:'
+    for key, _ in BOARD_LIST.iteritems():
+        print " * " + key
+    sys.exit(1)
+
+LISTS = []
+for li in BOARD.all_lists():
+    LISTS.append(li.name)
+if LIST not in LISTS:
+    print 'Invalid List name'
+    print 'Available Lists:'
+    for item in LISTS:
+        print " * " + item
+    sys.exit(1)
+
+CARDS = BOARD.get_cards()
+FOUND_CARDS = []
+
+for card in CARDS:
+    name = card.name
+    try:
+        card_list = BOARD.get_list(card.list_id).name
+    except ResourceUnavailable:
+        sys.exit('Unable to find card list')
+
+    if card_list == LIST:
+        FOUND_CARDS.append(card.name.encode('utf-8').strip())
+
+print "Cards in list {0}".format(LIST)
+for num, card in enumerate(FOUND_CARDS):
+    print "{0}. {1}".format(num + 1, card)

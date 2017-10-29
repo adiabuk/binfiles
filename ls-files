@@ -1,0 +1,11 @@
+#!/bin/bash
+SAVEIFS=$IFS
+IFS=$(echo -en "\n\b")
+for f in `cat $1`
+do
+  for g in `echo $f`; do
+    IFS=" "
+    du "$g" 2>/dev/null
+  done
+done
+IFS=$SAVEIFS
