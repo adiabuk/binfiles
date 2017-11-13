@@ -39,7 +39,7 @@ def main():
                for y in glob(os.path.join(x[0], '*'))]
 
     if not results:
-        print "No files found"
+        print("No files found")
         sys.exit(1)
 
     files=[]
@@ -63,30 +63,30 @@ def main():
                 space_files.append(curr_dir)
 
     if not space_files:
-        print "No files with spaces found"
+        print("No files with spaces found")
         sys.exit(1)
 
 
     for item in space_files:
         if args.list:
-            print "*", item
+            print("*", item)
         elif args.all:
             dir_name = os.path.dirname(item)
             base_name = os.path.basename(item)
             fixed_name = dir_name + '/' + base_name.replace(" ", "_")
-            print "Renaming {0} to {1}".format(item, fixed_name)
+            print("Renaming {0} to {1}".format(item, fixed_name))
             os.rename(item, fixed_name)
         elif args.interactive:
             dir_name = os.path.dirname(item)
             base_name = os.path.basename(item)
             fixed_name = dir_name + '/' + base_name.replace(" ", "_")
 
-            print "Renaming {0} to {1}".format(item, fixed_name)
-            print "Proceed? [y|N]:",
+            print("Renaming {0} to {1}".format(item, fixed_name))
+            print("Proceed? [y|N]:",)
             answer = getch()
             if answer.upper() == 'Y':
                 os.rename(item, fixed_name)
-            print
+            print()
 
 if __name__ == '__main__':
     main()

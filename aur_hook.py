@@ -9,7 +9,7 @@ Command-line application that does a search.
 Create a file called .googleapikey with your API key from google and
 place in the root of your home directory
 """
-
+from __future__ import print_function
 import os
 import re
 import sys
@@ -40,11 +40,11 @@ def main():
         home = os.getenv("HOME")
         key = open(home + '/.googleapikey', 'r').read()
     except IOError:
-        print """
+        print("""
         Unable to open API Key, please create file ~/.googleapikey, and ensure
         it has your API key from google.  For more information visit:
         http://code.google.com/apis/console>
-        """
+        """)
         sys.exit(1)
     try:
         service = build("customsearch", "v1", developerKey=key)
@@ -62,7 +62,7 @@ def main():
     if 'items' not in res:
         sys.stderr.write('AUR: File not found\n')
         sys.exit(1)
-    print cleanhtml(res['items'][0]['htmlTitle']).split()[-1]
+    print(cleanhtml(res['items'][0]['htmlTitle']).split()[-1])
 
 if __name__ == '__main__':
     main()
