@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Convert given list of mkv files to mp3
+
+function process_file() {
+  video=$1
+  audio=${video/mkv/mp3}
+  if [[ "$video" != "*mkv" ]] && [[ ! -f $video ]]; then
+    echo "FAIL" $video
+    exit 1
+  fi
+
+  ffmpeg -i $video -vn -acodec libmp3lame -ac 2 -ab 160k -ar 48000  $audio
+}
+
+
+for file in $@; do
+  echo "processing $file"
+  process_file $file
+  sleep 1
+done
+
+
