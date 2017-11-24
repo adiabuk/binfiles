@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 
 # Notifier example from tutorial
@@ -7,6 +7,7 @@
 #
 # odtwatcher.py
 
+from __future__ import print_function
 import os
 import pyinotify
 import subprocess
@@ -21,12 +22,12 @@ class EventHandler(pyinotify.ProcessEvent):
     def process_IN_MODIFY(self, event):
         fname = event.pathname
         if os.path.splitext(fname)[1] == '.odt':
-            print 'MODIFIED: ', fname
+            print('MODIFIED: ', fname)
             args = ['unoconv', '-f', 'pdf', fname]
             try:
                 subprocess.Popen(args)
             except OSError as e:
-                print 'Could not convert file %s to PDF. Error %s' % (fname, str(e))
+                print('Could not convert file %s to PDF. Error %s' % (fname, str(e)))
 
 if __name__ == '__main__':
     handler = EventHandler()

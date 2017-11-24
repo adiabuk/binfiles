@@ -1,10 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 """
 Displays current, previous, and next months
 calendar for conky
 """
 
+from __future__ import print_function
 import calendar
 import re
 import time
@@ -30,4 +31,4 @@ for month in MONTHS:
         newCal = re.sub(regex, replace, cal)
     else:
         newCal = cal
-    print newCal
+    print(newCal)
