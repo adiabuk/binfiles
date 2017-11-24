@@ -1,0 +1,8 @@
+argcomplete==1.9.2
+base==1.0.4
+getch==1.0
+google_api_python_client==1.6.4
+httplib2==0.10.3
+proc==0.14
+pyinotify==0.9.6
+you_get==0.4.964
