@@ -1,0 +1,7 @@
+{
+    "ssh": ["exec -it", "bash"],
+    "emacs.d": ".emacs.d",
+    "keymap": ".Xmodmap",
+    "vim": ".vim"
+}
+
