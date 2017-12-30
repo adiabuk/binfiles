@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Get public IP address
-
 set -eu
 set -o pipefail
 aws='http://instance-data/latest/meta-data/public-ipv4'
