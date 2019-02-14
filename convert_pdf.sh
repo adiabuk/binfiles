@@ -5,16 +5,17 @@
 #
 # Author: Amro Diab
 # 2017
+PDFCHECK=/home/amro/repos/personal/pdfgrep/pdfgrep/pdfcheck.py
 
 for file in $(find . -iname "*.pdf"|grep -v ocr); do
-  if pdfcheck "$file" | grep -q FAILED; then
+  if $PDFCHECK "$file" | grep -q FAILED; then
     echo "ocring file $file"
     pypdfocr "$file"
 
   else
     renamed=${file/_ocr/}
     echo "renaming file to $renamed"
-    mv "$file" "$renamed"
+    #mv "$file" "$renamed"
   fi
 done
 
