@@ -6,7 +6,7 @@
 # Author: Amro Diab
 # 2017
 
-PDFCHECK=/home/amro/repos/personal/pdfgrep/pdfgrep/pdfcheck.py
+PDFCHECK=$HOME/repos/personal/pdfgrep/pdfgrep/pdfcheck.py
 
 for ocr in *ocr*; do
    non_ocr=${ocr/_ocr/}

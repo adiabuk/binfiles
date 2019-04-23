@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # Create Symlinks for ~/Desktop, ~/Documents, ~/Pictures, ~/tmp
 # to googledrrive synced directory
