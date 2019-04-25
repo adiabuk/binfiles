@@ -2,14 +2,15 @@
 
 # Git status of all repositories found in current directory
 
-for i in *; do
-  if [[ -d "$i" ]]; then
-    printf "\033[31m"  #red
-    echo "$i"
+for dir in *; do
+  if [[ -d "$dir" ]]; then
     printf "\033[0m"  # White
-    cd "$i" || exit 1;
-    git st .;
-    cd - || exit 1;
+    echo " * $dir"
+    printf "\033[31m"  #red
+    cd "$dir" || exit 1;
+    git st . 2>&1 |grep -vE "On branch|origin|nothing|^$";
+    cd - &> /dev/null || exit 1;
   fi
 done
 
+printf "\033[0m"  # White
