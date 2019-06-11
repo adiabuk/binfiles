@@ -13,9 +13,9 @@ for file in $(find . -iname "*.pdf"|grep -v ocr); do
     pypdfocr "$file"
 
   else
-    renamed=${file/_ocr/}
+    renamed="${file%.pdf}_ocr.pdf"
     echo "renaming file to $renamed"
-    #mv "$file" "$renamed"
+    mv "$file" "$renamed"
   fi
 done
 
