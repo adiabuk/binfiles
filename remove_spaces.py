@@ -6,6 +6,7 @@ Remove spaces from filenames and dirs, and replace them with underscores
 Look for files recursively starting from current directory
 """
 
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -42,8 +43,8 @@ def main():
         print("No files found")
         sys.exit(1)
 
-    files=[]
-    dirs=[]
+    files = []
+    dirs = []
 
     for result in results:
         if os.path.isfile(result):
