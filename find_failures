@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+#set -e
+
+version=$1
+if [[ -z $version ]]; then
+  echo "Please supply version number as arg"
+  exit 1
+fi
+
+echo "MASTER"
+for i in shop zest caramel brain magpie kit; do
+  cd $i;
+  echo $i;
+  git fetch &>/dev/null
+  git reset --hard &>/dev/null
+  git co rc-master-${version} &>/dev/null;
+  git log | grep Failed.*${version};
+  git co master &>/dev/null;
+  cd ..;
+done
+
+echo
+echo "*****************************************"
+echo
+
+echo "DOTCOM"
+for i in shop zest; do
+  cd $i
+  echo $i
+  git fetch &>/dev/null
+  git reset --hard &>/dev/null
+  git co rc-dotcom-${version} &>/dev/null;
+  git log | grep Failed.*${version};
+  git co master &>/dev/null;
+  cd ..
+done
