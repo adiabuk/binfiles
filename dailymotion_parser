@@ -1,0 +1,28 @@
+class DailymotionParser
+
+  URLS = [
+    /^.+dailymotion.com\/(video|hub)\/([^_]+)([^#|^?]*)(#video=([^_&]+))?/
+  ]
+
+  def self.parse url
+    case url
+    when URLS[0]
+      match_data = url.match(URLS[0])
+      puts match_data.inspect
+      id = match_data[5] || match_data[2]
+      name = match_data[3] || ''
+      [id, name.gsub(/-|_/, ' ')]
+    end
+  end
+
+end
+
+if $0 == __FILE__
+  p DailymotionParser.parse "http://www.dailymotion.com/video/x44lvd_rates-of-exchange-like-a-renegade_music"
+  p DailymotionParser.parse "http://www.dailymotion.com/video/x44lvd"
+  p DailymotionParser.parse "http://www.dailymotion.com/hub/x9q_Galatasaray"
+  p DailymotionParser.parse "http://www.dailymotion.com/hub/x9q_Galatasaray#video=xjw21s"
+  p DailymotionParser.parse "http://www.dailymotion.com/video/xn1bi0_hakan-yukur-klip_sport"
+  p DailymotionParser.parse "http://www.dailymotion.com/video/xv0f8o_yy-yyvcdyyyyyy-fasttvb2-allalla-com-split1_shortfilms?search_algo=2"
+end
+
