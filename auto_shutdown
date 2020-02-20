@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if ps -x |grep -q "[s]shd.* ubuntu"; then
+  echo "User logged in"
+else
+  /usr/local/bin/notify-run end "bastion going down";
+  shutdown -h now
+fi
