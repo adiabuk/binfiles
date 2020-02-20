@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+#pylint: disable=import-error,ungrouped-imports
+
+"""
+Small script to lookup instance id using name
+Requirements: Python 3.x
+"""
+
+from __future__ import print_function
+
+import sys
+import json
+import socket
+
+import awscli.clidriver
+
+if sys.version_info[0] < 3:
+    from StringIO import StringIO
+    JSONDecodeError = ValueError
+else:
+    from io import StringIO
+    from json.decoder import JSONDecodeError
+
+def get_id(name, profile):
+    """
+    Get Instance ID from given Instance name
+    """
+
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+
+    driver = awscli.clidriver.create_clidriver()
+    command = ["ec2", "describe-instances", "--filter",
+               "Name=tag:Name,Values={}".format(name), "--profile", profile]
+    driver.main(command)
+    sys.stdout = old_stdout
+    try:
+
+        json_data = json.loads(mystdout.getvalue())
+    except JSONDecodeError:
+        return 1
+    try:
+        instance_id = json_data["Reservations"][0]["Instances"][0]["InstanceId"]
+        print(instance_id)
+        return 0
+    except IndexError:
+        return 1
+
+def main():
+    """
+    Main function
+    """
+    if len(sys.argv) != 2:
+        sys.exit("Usage: {} [instance_id]".format(sys.argv[0]))
+    arg = sys.argv[1]
+    for profile in ['gc']:
+        result = get_id(arg, profile)
+    sys.exit(result)
+
+if __name__ == "__main__":
+    sys.exit(main())
