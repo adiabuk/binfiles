@@ -11,31 +11,30 @@ import sys
 import urllib
 
 import argcomplete
-from you_get.extractors import dailymotion
+import youtube_dl
 
-def get_videos(start=1, end=1000, output='.', user=None):
+def get_videos(end=100, search='', user=None):
     """
     Fetch videos for a particular user in given episode range
     """
-    url = 'https://api.dailymotion.com/user/{0}/videos?search={1}&fields=id'  # user, SEQ
 
-    for episode in range(start, end):
-        episode_url = url.format(user, episode)
-        print(episode_url)
+    search = "mile"
+    url = 'https://api.dailymotion.com/user/{0}/videos?search={1}&limit={2}'  # user, SEQ
+    print(url)
+    try:
+        print('AMROX' +  url.format(user, search, end))
+        data = urllib.request.urlopen(url.format(user, search, end)).read()
+    except urllib.error.HTTPError:
+        sys.stderr.write('\n404 Error Encountered, check username...\n')
+        sys.exit(1)
+    video_ids = json.loads(data)['list']
+    for  item in video_ids:
+        video = "https://www.dailymotion.com/video/{0}".format(item['id'])
+        ydl_opts = {}
         try:
-            data = urllib.request.urlopen(url.format(user, episode)).read()
-        except urllib.error.HTTPError:
-            sys.stderr.write('\n404 Error Encountered, check username...\n')
-            sys.exit(1)
-        try:
-            video_id = json.loads(data)['list'][0]['id']
-        except IndexError:
-            print("Invalid episode number{0}, or video not found, skipping...".format(episode))
-            continue
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([video])
 
-        video = "https://www.dailymotion.com/video/{0}".format(video_id)
-        try:
-            dailymotion.dailymotion_download(video, output_dir=output)
         except KeyboardInterrupt:
             sys.stderr.write('\nExiting...\n')
             sys.exit(1)
@@ -44,13 +43,11 @@ def get_videos(start=1, end=1000, output='.', user=None):
 def main():
     """ Main function """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--start', help="start sequence", required=True, type=int)
-    parser.add_argument('-e', '--end', help="end sequence", required=True, type=int)
-    parser.add_argument('-o', '--output', help="output directory", required=False, default='.')
+    parser.add_argument('-s', '--search', help="search string", required=True)
     parser.add_argument('-u', '--user', help="dailymotion user", required=True)
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
-    get_videos(int(args.start), int(args.end), args.output, args.user)
+    get_videos(user=args.user, search=args.search)
 
 if __name__ == "__main__":
     main()
