@@ -1,8 +1,8 @@
-argcomplete==1.9.2
-base==1.0.4
+argcomplete==1.10.0
 getch==1.0
-google_api_python_client==1.6.4
-httplib2==0.10.3
-proc==0.14
+youtube_dl==2021.12.17
+base==1.0.4
+google_api_python_client==2.35.0
+httplib2==0.20.2
+proc==1.0
 pyinotify==0.9.6
-you_get==0.4.964
