@@ -1,0 +1,8 @@
+count=9
+while [ $count -ne "0" ]; do 
+sleep 5
+count=`curl -gs 'http://10.8.0.101:8080/computer/api/xml?tree=computer[executors[currentExecutable[url]],oneOffExecutors[currentExecutable[url]]]&xpath=//url&wrapper=builds' | xmllint --xpath "count(//url)" -`
+echo "waiting...current: $count"
+done
+echo done
+
