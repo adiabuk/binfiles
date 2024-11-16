@@ -1,0 +1,8 @@
+count=9
+while [ $count -ne "0" ]; do
+sleep 5
+count=`curl -gs http://10.0.0.212:8080/queue/api/xml| xmllint --xpath "count(//id)" -`
+echo "waiting...current: $count"
+done
+echo done
+
