@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+version=$1
+[[ -z $version ]] && echo "Usage $0 <version>" && exit 2
+git rc
+echo "copy content and press enter to continue"
+read
+vi CHANGELOG.md
+vi greencandle/version.py
+git add greencandle/version.py CHANGELOG.md
+git ci -m "bump version to $version"
+git pa
+git co master
+git merge dev
+git pa
+git tag $version
+git pt
+git dt
+git br -D dev
+git co -b dev
+git ci -m "new dev branch fork" --allow-empty
+git pa
+
